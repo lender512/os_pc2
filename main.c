@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "linkedlist.h"
 
 
 void userInput(int memorySize){
@@ -14,7 +15,16 @@ void userInput(int memorySize){
 
 
 int main(int argc, char *argv[]){
-    char* firstArgument = argv[1];
-    userInput(atoi(firstArgument));
+    char* size = argv[1];
+    //userInput(atoi(firstArgument));
+    
+    
+    struct linkedList* head = initLinkedList("free",atoi(size));
+    insertLinkedList(&head,"holias",20);
+    insertLinkedList(&head,"porremover",20);
+    insertLinkedList(&head,"jasjasj",20);
+    printLinkedList(head);
+    removeLinkedList(head, "porremover");
+    printLinkedList(head);
     return 0;
 }
