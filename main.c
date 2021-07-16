@@ -17,20 +17,25 @@ void userInput(int memorySize){
 int main(int argc, char *argv[]){
     char* size = argv[1];
     //userInput(atoi(firstArgument));
-    
+    char string [256];
+    printf ("Insert your full address: ");
+    gets (string);
+    printf ("Your address is: %s\n",string);
     
     struct linkedList* head = initMemory(atoi(size));
-    allocateF(&head,"holias",20);
-    allocateF(&head,"porremover",20);
-    allocateF(&head,"jasjasj",20);
+    allocateF(&head,"P1",5);
+    allocateF(&head,"P2",25);
+    allocateF(&head,"P3",20);
     printMemory(head);
-    deallocate(head, "porremover");
+    deallocate(head, "P2");
     printMemory(head);
-    allocateF(&head,"jasjasj",10);
+    allocateF(&head,"P4",10);
     printMemory(head);
-    allocateF(&head,"jasjasj",15);
+    allocateF(&head,"P5",15);
     printMemory(head);
-
-    allocateW(&head,"ajsdjasd",1);
+    deallocate(head, "P3");
+    printMemory(head);
+    allocateB(&head,"P6",16);
+    printMemory(head);
     return 0;
 }
