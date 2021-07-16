@@ -68,6 +68,51 @@ void allocateF(struct linkedList **list, char* id, int size) {
     new_node->next = current;
 }
 
+void allocateW(struct linkedList **list, char* id, int size) {
+
+    struct linkedList* current = *list;
+    int worstSize = 0;
+    char* worstId = NULL;
+    while (current != NULL) {
+        int currentSize = current->top_adr - current->base_adr;
+        if (currentSize > worstSize && current->free) {
+            worstSize = currentSize;
+            worstId = (char*) malloc(strlen(current->id)+1);
+            strcpy(worstId,current->id);
+        }
+        current = current->next;
+    }
+    
+    printf("worst id %s size: %i\n", worstId, worstSize);
+
+    // struct linkedList *new_node = (struct linkedList*) malloc(sizeof(struct linkedList));
+    // new_node->id = (char*) malloc(sizeof(char) * (strlen(id) + 1));
+    // strcpy(new_node->id, id);
+    // struct linkedList *current = *list;
+    // struct linkedList *prev = NULL;
+    // while (!(current->free && (current->top_adr - current->base_adr >= size))){
+    //     prev = current;
+    //     current = current->next;
+    //     if (current == NULL){
+    //         printf("Segmentation fault\n");
+    //         return;
+    //     }
+    // }
+
+    // new_node->base_adr = current->base_adr;
+    // new_node->top_adr = new_node->base_adr + size;
+    // new_node->free = false;
+    // // CHECK
+    // current->base_adr = current->base_adr + size + 1;
+    // if (prev != NULL){
+    //     prev->next = new_node;
+    // }
+    // else{
+    //     *list = new_node;
+    // }
+    // new_node->next = current;
+}
+
 void printMemory(struct linkedList *list) {
     struct linkedList *current = list;
     while (current != NULL) {

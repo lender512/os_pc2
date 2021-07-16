@@ -30,5 +30,7 @@ int main(int argc, char *argv[]){
     printMemory(head);
     allocateF(&head,"jasjasj",15);
     printMemory(head);
+
+    allocateW(&head,"ajsdjasd",1);
     return 0;
 }
