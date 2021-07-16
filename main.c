@@ -19,12 +19,16 @@ int main(int argc, char *argv[]){
     //userInput(atoi(firstArgument));
     
     
-    struct linkedList* head = initLinkedList("free",atoi(size));
-    insertLinkedList(&head,"holias",20);
-    insertLinkedList(&head,"porremover",20);
-    insertLinkedList(&head,"jasjasj",20);
-    printLinkedList(head);
-    removeLinkedList(head, "porremover");
-    printLinkedList(head);
+    struct linkedList* head = initMemory(atoi(size));
+    allocateF(&head,"holias",20);
+    allocateF(&head,"porremover",20);
+    allocateF(&head,"jasjasj",20);
+    printMemory(head);
+    deallocate(head, "porremover");
+    printMemory(head);
+    allocateF(&head,"jasjasj",10);
+    printMemory(head);
+    allocateF(&head,"jasjasj",15);
+    printMemory(head);
     return 0;
 }

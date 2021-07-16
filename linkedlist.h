@@ -11,7 +11,7 @@ struct linkedList {
     struct linkedList *next;
 };
 
-struct linkedList* initLinkedList(char* id, int size){
+struct linkedList* initMemory(int size){
     struct linkedList* new_list = (struct linkedList*) malloc(sizeof(struct linkedList));
     new_list->id = (char*) malloc(sizeof(char) * (strlen("free") + 1));
     strcpy(new_list->id, "free");
@@ -22,7 +22,7 @@ struct linkedList* initLinkedList(char* id, int size){
     return new_list;
 }
 
-void removeLinkedList(struct linkedList *list, char* id) {
+void deallocate(struct linkedList *list, char* id) {
     struct linkedList *current = list;
     while (current != NULL) {
         if (strcmp(current->id, id) == 0) {
@@ -38,7 +38,7 @@ void removeLinkedList(struct linkedList *list, char* id) {
 
 //first Fit
 
-void insertLinkedList(struct linkedList **list, char* id, int size) {
+void allocateF(struct linkedList **list, char* id, int size) {
 
     struct linkedList *new_node = (struct linkedList*) malloc(sizeof(struct linkedList));
     new_node->id = (char*) malloc(sizeof(char) * (strlen(id) + 1));
@@ -66,18 +66,9 @@ void insertLinkedList(struct linkedList **list, char* id, int size) {
         *list = new_node;
     }
     new_node->next = current;
-    // new_node->base_adr = current->base_adr;
-    // new_node->top_adr = new_node->base_adr + size;
-    // new_node->free = false;
-
-    // struct linkedList *last_node = current;
-    // while(last_node->next != NULL)
-    //     last_node = last_node->next;
-    // last_node->next = new_node;
-    // new_node->next = NULL;
 }
 
-void printLinkedList(struct linkedList *list) {
+void printMemory(struct linkedList *list) {
     struct linkedList *current = list;
     while (current != NULL) {
         printf("id: %s, base address: %i, top address: %i", current->id, current->base_adr, current->top_adr);
@@ -85,5 +76,4 @@ void printLinkedList(struct linkedList *list) {
         current = current->next;
     }
     printf("\n");
-
 }
