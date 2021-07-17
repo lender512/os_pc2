@@ -173,7 +173,13 @@ void compaction(struct linkedList* list){
             last_allocated = current;
         }
         if (found_free && !current->free) {
-            swapLinkedList(&list, last_allocated->next, current);
+            if (last_allocated->free) {
+                printf("current: %s\n", current->id);
+                swapLinkedList(&list, last_allocated, current);
+            } else {
+                swapLinkedList(&list, last_allocated->next, current);
+            
+            }
         }
         current = current->next;
     }
@@ -197,27 +203,27 @@ void swapLinkedList(struct linkedList** list,struct linkedList *node1, struct li
     if (node1 == node2){
         return;
     }
-    else{
+    
     struct linkedList *prev1 = findPrevLinkedList(list, node1);
     struct linkedList *prev2 = findPrevLinkedList(list, node2);
     
+    if(node1 != NULL && node2 != NULL) {  
+        if (prev1 != NULL){
+            prev1->next = node2;
+        } else {
+            *list = node1;
+        }
 
-    if (prev1 == NULL){
-        prev1->next = node2;
-    } else {
-        *list = node2;
+        if (prev2 != NULL){
+            prev2->next = node1;
+        } else {
+            *list = node2;
+        }
+
+        struct linkedList *temp = node1->next;
+        node1->next = node2->next;
+        node2->next = temp;
     }
-
-    if (prev2 == NULL){
-        prev2->next = node1;
-    } else {
-        *list = node1;
-    }
-
-    struct linkedList *temp = node1->next;
-    node1->next = node2->next;
-    node2->next = temp;
-
 
     // struct linkedList *tempRescue = node1->next;
 
@@ -248,7 +254,7 @@ void swapLinkedList(struct linkedList** list,struct linkedList *node1, struct li
     int size1 = node1->top_adr - node1->base_adr; 
     int size2 = node2->top_adr - node2->base_adr;
 
-    if (new_prev1 != NULL && new_prev2 != NULL)
+    if (new_prev1 != NULL && new_prev2 != NULL) {
         node2->base_adr = new_prev2->top_adr + 1;
         node2->top_adr = node2->base_adr + size2;
         
