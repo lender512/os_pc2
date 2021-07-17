@@ -79,7 +79,6 @@ void allocateW(struct linkedList **list, char* id, int size) {
     struct linkedList* current = *list;
     struct linkedList *prev = NULL;
     int worstSize = 0;
-    char* worstId = NULL;
 
     struct linkedList *worst = NULL;
     struct linkedList *prevWorst = NULL;
@@ -126,7 +125,6 @@ void allocateB(struct linkedList **list, char* id, int size) {
     struct linkedList* current = *list;
     struct linkedList *prev = NULL;
     int bestSize = INT_MAX;
-    char* bestId = NULL;
 
     struct linkedList *best = NULL;
     struct linkedList *prevBest = NULL;
@@ -163,9 +161,102 @@ void allocateB(struct linkedList **list, char* id, int size) {
     new_node->next = best;
 }
 
-void compaction(struct linkedList *list) {
-    
+void compaction(struct linkedList* list){
+    struct linkedList* current = list;
+    struct linkedList* last_allocated = list;
+    bool found_free = false;
+    while (current != NULL) {
+        if (current->free) {
+            found_free = true;
+        }
+        if (!found_free) {
+            last_allocated = current;
+        }
+        if (found_free && !current->free) {
+            swapLinkedList(&list, last_allocated->next, current);
+        }
+        current = current->next;
+    }
 }
+
+// swap Linked List nodes
+
+struct linkedList* findPrevLinkedList(struct linkedList *list, struct linkedList* find){
+    struct linkedList* prev = list;
+    while (prev != NULL) {
+        if (prev->next == find) {
+            break;
+        }
+        prev = prev->next;
+    }
+    return prev;
+}
+
+
+void swapLinkedList(struct linkedList** list,struct linkedList *node1, struct linkedList *node2){
+    if (node1 == node2){
+        return;
+    }
+    else{
+    struct linkedList *prev1 = findPrevLinkedList(list, node1);
+    struct linkedList *prev2 = findPrevLinkedList(list, node2);
+    
+
+    if (prev1 == NULL){
+        prev1->next = node2;
+    } else {
+        *list = node2;
+    }
+
+    if (prev2 == NULL){
+        prev2->next = node1;
+    } else {
+        *list = node1;
+    }
+
+    struct linkedList *temp = node1->next;
+    node1->next = node2->next;
+    node2->next = temp;
+
+
+    // struct linkedList *tempRescue = node1->next;
+
+    // prev1->next = node2;
+
+    // if (prev2 == node1){
+    //     prev2->next = node2->next;
+    // }
+    // else{
+    //     prev2->next = node1; //next
+    // }
+
+    // struct linkedList *temp = node2->next;
+
+    // if (node2 == tempRescue){
+    //     node2->next = node1;
+    // }
+    // else{
+    //     node2->next = node1->next; //next
+    //     node1->next = temp;
+    // }
+
+    struct linkedList *new_prev1 = findPrevLinkedList(list, node1);
+    struct linkedList *new_prev2 = findPrevLinkedList(list, node2);
+
+
+
+    int size1 = node1->top_adr - node1->base_adr; 
+    int size2 = node2->top_adr - node2->base_adr;
+
+    if (new_prev1 != NULL && new_prev2 != NULL)
+        node2->base_adr = new_prev2->top_adr + 1;
+        node2->top_adr = node2->base_adr + size2;
+        
+        node1->base_adr = new_prev1->top_adr + 1;
+        node1->top_adr = node1->base_adr + size1;
+    }
+}
+
 
 void printMemory(struct linkedList *list) {
     struct linkedList *current = list;
