@@ -44,6 +44,8 @@ int main(int argc, char *argv[]){
             compaction(&head);
         } else if (strcmp(arguments[0], "STAT") == 0){
             printMemory(head);
+        } else {
+            printf("Please enter valid instruction\n");
         }
     } while (strcmp(string, "X") != 0);
 
