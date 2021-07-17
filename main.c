@@ -16,36 +16,36 @@ void userInput(int memorySize){
 
 int main(int argc, char *argv[]){
     char* size = argv[1];
-    //userInput(atoi(firstArgument));
+     struct linkedList* head = initMemory(atoi(size));
+
     char string [256];
-    printf ("Insert your full address: ");
-    gets (string);
-    printf ("Your address is: %s\n",string);
-    
-    struct linkedList* head = initMemory(atoi(size));
-
-    allocateF(&head,"P1",5);
-    allocateF(&head,"P2",10);
-    allocateF(&head,"P3",15);
-    deallocate(head, "P1");
-
-    // allocateF(&head,"P1",5);
-    // allocateF(&head,"P2",25);
-    // allocateF(&head,"P3",20);
-    // printMemory(head);
-    // deallocate(head, "P2");
-    // printMemory(head);
-    // allocateF(&head,"P4",10);
-    // printMemory(head);
-    // allocateF(&head,"P5",15);
-    // printMemory(head);
-    // deallocate(head, "P3");
-    // printMemory(head);
-    // allocateB(&head,"P6",16);
-    printMemory(head);
-
-    compaction(head);
-    printMemory(head);
+    do
+    {
+        gets(string);
+        char* arguments[64];
+        int counter = 0;
+        char * token = strtok(string, " ");
+        while(token != NULL ) {
+            arguments[counter] = token;
+            counter++;
+            token = strtok(NULL, " ");
+        }
+        if (strcmp(arguments[0], "RQ") == 0){
+            if (strcmp(arguments[3], "W") == 0) {
+                allocateW(&head,arguments[1], atoi(arguments[2]));
+            } else if (strcmp(arguments[3], "B") == 0) {
+                allocateB(&head,arguments[1], atoi(arguments[2]));
+            } else if (strcmp(arguments[3], "F") == 0) {
+                allocateF(&head,arguments[1], atoi(arguments[2]));
+            }
+        } else if (strcmp(arguments[0], "RL") == 0){
+            deallocate(head, arguments[1]);
+        } else if (strcmp(arguments[0], "C") == 0){
+            compaction(&head);
+        } else if (strcmp(arguments[0], "STAT") == 0){
+            printMemory(head);
+        }
+    } while (strcmp(string, "X") != 0);
 
     return 0;
 }

@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <limits.h>
 
+
+
 struct linkedList {
     char* id;
     int base_adr;
@@ -11,6 +13,9 @@ struct linkedList {
     bool free;
     struct linkedList *next;
 };
+
+
+void printMemory(struct linkedList *list);
 
 struct linkedList* initMemory(int size){
     struct linkedList* new_list = (struct linkedList*) malloc(sizeof(struct linkedList));
@@ -139,8 +144,6 @@ void allocateB(struct linkedList **list, char* id, int size) {
         prev = current;
         current = current->next;
     }
-    
-    //printf("worst id %s size: %i\n", worst->id, worstSize);
 
     if (best == NULL){
         printf("Segmentation fault\n");
@@ -161,39 +164,34 @@ void allocateB(struct linkedList **list, char* id, int size) {
     new_node->next = best;
 }
 
-void compaction(struct linkedList* list){
-    struct linkedList* current = list;
-    struct linkedList* last_allocated = list;
+void compaction(struct linkedList** list){
+    struct linkedList* current = *list;
+    struct linkedList* last_allocated = NULL;
     bool found_free = false;
     while (current != NULL) {
-        if (current->free) {
+        if (current->free && !found_free) {
             found_free = true;
-        }
-        if (!found_free) {
             last_allocated = current;
         }
+        
         if (found_free && !current->free) {
-            if (last_allocated->free) {
-                printf("current: %s\n", current->id);
-                swapLinkedList(&list, last_allocated, current);
-            } else {
-                swapLinkedList(&list, last_allocated->next, current);
-            
-            }
+
+            swapLinkedList(list, current, last_allocated);
+            found_free = false;
+            //printMemory(*list);
         }
         current = current->next;
+        //
+        
     }
 }
 
-// swap Linked List nodes
-
 struct linkedList* findPrevLinkedList(struct linkedList *list, struct linkedList* find){
-    struct linkedList* prev = list;
-    while (prev != NULL) {
-        if (prev->next == find) {
-            break;
-        }
-        prev = prev->next;
+    struct linkedList* prev = NULL;
+    struct linkedList* curr = list;
+    while (curr != NULL && curr != find) {
+        prev = curr;
+        curr = curr->next;
     }
     return prev;
 }
@@ -204,25 +202,29 @@ void swapLinkedList(struct linkedList** list,struct linkedList *node1, struct li
         return;
     }
     
-    struct linkedList *prev1 = findPrevLinkedList(list, node1);
-    struct linkedList *prev2 = findPrevLinkedList(list, node2);
+    struct linkedList *prev1 = findPrevLinkedList(*list, node1);
+    struct linkedList *prev2 = findPrevLinkedList(*list, node2);
+    // printf("node1: %s\n", node1->id);
+    // printf("node2: %s\n", node2->id);
+    // prev1 == NULL? printf("prev1: NULL\n") : printf("prev1: %s\n", prev1->id);
+    // prev2 == NULL? printf("prev2: NULL\n") : printf("prev2: %s\n", prev2->id);
     
     if(node1 != NULL && node2 != NULL) {  
         if (prev1 != NULL){
             prev1->next = node2;
         } else {
-            *list = node1;
+            *list = node2;
         }
 
         if (prev2 != NULL){
             prev2->next = node1;
         } else {
-            *list = node2;
+            *list = node1;
         }
 
-        struct linkedList *temp = node1->next;
-        node1->next = node2->next;
-        node2->next = temp;
+        struct linkedList *temp = node2->next;
+        node2->next = node1->next;
+        node1->next = temp;
     }
 
     // struct linkedList *tempRescue = node1->next;
@@ -246,27 +248,71 @@ void swapLinkedList(struct linkedList** list,struct linkedList *node1, struct li
     //     node1->next = temp;
     // }
 
-    struct linkedList *new_prev1 = findPrevLinkedList(list, node1);
-    struct linkedList *new_prev2 = findPrevLinkedList(list, node2);
-
-
+    struct linkedList *new_prev1 = findPrevLinkedList(*list, node1);
+    struct linkedList *new_prev2 = findPrevLinkedList(*list, node2);
 
     int size1 = node1->top_adr - node1->base_adr; 
     int size2 = node2->top_adr - node2->base_adr;
 
     if (new_prev1 != NULL && new_prev2 != NULL) {
+        if (node1->base_adr >= node2->base_adr) {
+            node1->base_adr = new_prev1->top_adr + 1;
+            node1->top_adr = node1->base_adr + size1;
+
+            node2->base_adr = new_prev2->top_adr + 1;
+            node2->top_adr = node2->base_adr + size2;
+        } else {
+            node1->base_adr = new_prev1->top_adr + 1;
+            node1->top_adr = node1->base_adr + size1;
+
+            node2->base_adr = new_prev2->top_adr + 1;
+            node2->top_adr = node2->base_adr + size2;            
+        }
+
+    } else if (new_prev1 == NULL){
         node2->base_adr = new_prev2->top_adr + 1;
         node2->top_adr = node2->base_adr + size2;
-        
+
+        node1->base_adr = 0;
+        node1->top_adr = node1->base_adr + size1;
+    } else if (new_prev2 == NULL){
+        node2->base_adr = 0;
+        node2->top_adr = node2->base_adr + size2;
+
         node1->base_adr = new_prev1->top_adr + 1;
         node1->top_adr = node1->base_adr + size1;
+    }
+
+    struct linkedList *current = *list;
+    struct linkedList *first_free = NULL;
+    while (current->next != NULL) {
+        if (current->next->free && first_free == NULL) {
+            first_free = current;
+        }
+        current = current->next;
+    }
+    
+    struct linkedList *deTemp = NULL;
+    //destroyer
+    first_free->next->base_adr = first_free->top_adr+1;
+    first_free->next->top_adr = current->top_adr;
+    first_free->next->next = deTemp;
+    while (deTemp != NULL) {
+        struct linkedList *aux = deTemp;
+        free(aux->base_adr);
+        free(aux->top_adr);
+        free(aux->id);
+        free(aux);
+        deTemp = deTemp->next;
     }
 }
 
 
 void printMemory(struct linkedList *list) {
     struct linkedList *current = list;
+    printf("\n");
     while (current != NULL) {
+        //printf("id: %s ", current->id);
         printf("Addresses [%i:%i] ",current->base_adr, current->top_adr);
         current->free ? printf("Unused\n") : printf("Process %s\n", current->id);
         current = current->next;
