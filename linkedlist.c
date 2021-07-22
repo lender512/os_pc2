@@ -29,6 +29,7 @@ void deallocate(struct linkedList *list, char *id) {
     current = current->next;
   }
 }
+
 void allocateF(struct linkedList **list, char *id, int size) {
 
   struct linkedList *new_node =
@@ -186,6 +187,7 @@ void compaction(struct linkedList **list) {
     deTemp = deTemp->next;
   }
 }
+
 struct linkedList *findPrevLinkedList(struct linkedList *list,
                                       struct linkedList *find) {
   struct linkedList *prev = NULL;
@@ -196,6 +198,7 @@ struct linkedList *findPrevLinkedList(struct linkedList *list,
   }
   return prev;
 }
+
 void swapLinkedList(struct linkedList **list, struct linkedList *node1,
                     struct linkedList *node2) {
   if (node1 == node2) {
