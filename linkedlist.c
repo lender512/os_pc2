@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 struct linkedList *initMemory(int size) {
   struct linkedList *new_list =
       (struct linkedList *)malloc(sizeof(struct linkedList));
@@ -164,6 +163,28 @@ void compaction(struct linkedList **list) {
     current = current->next;
     //
   }
+
+  struct linkedList *current_2 = *list;
+  struct linkedList *first_free = NULL;
+  while (current_2->next != NULL) {
+    if (current_2->next->free && first_free == NULL) {
+      first_free = current_2;
+    }
+    current_2 = current_2->next;
+  }
+
+  struct linkedList *deTemp = NULL;
+  first_free->next->base_adr = first_free->top_adr + 1;
+  first_free->next->top_adr = current_2->top_adr;
+  first_free->next->next = deTemp;
+  while (deTemp != NULL) {
+    struct linkedList *aux = deTemp;
+    free(aux->base_adr);
+    free(aux->top_adr);
+    free(aux->id);
+    free(aux);
+    deTemp = deTemp->next;
+  }
 }
 struct linkedList *findPrevLinkedList(struct linkedList *list,
                                       struct linkedList *find) {
@@ -260,29 +281,6 @@ void swapLinkedList(struct linkedList **list, struct linkedList *node1,
 
     node1->base_adr = new_prev1->top_adr + 1;
     node1->top_adr = node1->base_adr + size1;
-  }
-
-  struct linkedList *current = *list;
-  struct linkedList *first_free = NULL;
-  while (current->next != NULL) {
-    if (current->next->free && first_free == NULL) {
-      first_free = current;
-    }
-    current = current->next;
-  }
-
-  struct linkedList *deTemp = NULL;
-  // destroyer
-  first_free->next->base_adr = first_free->top_adr + 1;
-  first_free->next->top_adr = current->top_adr;
-  first_free->next->next = deTemp;
-  while (deTemp != NULL) {
-    struct linkedList *aux = deTemp;
-    free(aux->base_adr);
-    free(aux->top_adr);
-    free(aux->id);
-    free(aux);
-    deTemp = deTemp->next;
   }
 }
 void printMemory(struct linkedList *list) {

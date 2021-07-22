@@ -8,6 +8,7 @@ int main(int argc, char *argv[]) {
 
   char string[256];
   do {
+    printf("allocator> ");
     gets(string);
     char *arguments[64];
     int counter = 0;
